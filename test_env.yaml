@@ -28,15 +28,15 @@ services:
       - INTERFACE=${RTPENGINE_IP}
       - LISTEN_NG=${RTPENGINE_IP}:2223
       - PIDFILE=/run/ngcp-rtpengine-daemon.pid
-      - PORT_MAX=30000
-      - PORT_MIN=31000
+      - PORT_MAX=31000
+      - PORT_MIN=30000
       - NO_FALLBACK=no
       - TOS=184
     expose:
       - "2223/udp"
-      - "49000-50000/udp"
+      - "30000-31000/udp"
     ports:
-      - "49000-50000:49000-50000/udp"
+      - "30000-31000:30000-31000/udp"
     networks:
       default:
         ipv4_address: ${RTPENGINE_IP}
