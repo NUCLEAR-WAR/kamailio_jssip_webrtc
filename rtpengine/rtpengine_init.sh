@@ -40,7 +40,7 @@ fi
 [ -z "$TABLE" ] && TABLE="0"
 [ -z "$LISTEN_NG" ] && LISTEN_NG="$(awk 'END{print $1}' /etc/hosts):2223"
 [ -z "$PORT_MIN" ] && PORT_MIN="30000"
-[ -z "$PORT_MAX" ] && PORT_MAX="40000"
+[ -z "$PORT_MAX" ] && PORT_MAX="31000"
 [ -z "$TOS" ] && TOS="184"
 [ -z "$PIDFILE" ] && PIDFILE="/run/ngcp-rtpengine-daemon.pid"
 
