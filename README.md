@@ -1,4 +1,4 @@
-# Kamailio with WebSocket an JsSIP in Docker
+# Kamailio with WebSocket and JsSIP on NGINX Webserverin in Docker
 
 Here is a docker container runs Kamailio as WebSocket/SIP Server and NGINX with simple JsSIP based WebSIP Client for Calls and messaging.
 
