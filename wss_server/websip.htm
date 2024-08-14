@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Caller Client</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            margin: 0;
+            padding: 0;
+            color: #fff;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #2c3e50;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            margin-top: 50px;
+            position: relative;
+        }
+        h2 {
+            text-align: center;
+            color: #ecf0f1;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #ecf0f1;
+        }
+        input[type="text"], input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border-radius: 10px;
+            border: 1px solid #34495e;
+            font-size: 16px;
+            background: #34495e;
+            color: #ecf0f1;
+        }
+        .info {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1rem;
+            color: #ecf0f1;
+        }
+        .status-box {
+            background: #1e272e;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #34495e;
+            text-align: center;
+        }
+        .status-box span {
+            font-weight: 700;
+        }
+        .register-buttons, .call-buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .register-buttons button, .call-buttons button {
+            width: calc(50% - 10px);
+            padding: 12px;
+            margin: 5px;
+            border-radius: 30px;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            display: inline-block;
+        }
+        .register-buttons #registerBtn {
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
+        }
+        .register-buttons #registerBtn.registered {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+        }
+        .register-buttons #registerBtn.unregistered {
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+        }
+        .call-buttons button {
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
+        }
+        .call-buttons #endCallBtn {
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+        }
+        .call-buttons #muteBtn {
+            background: linear-gradient(90deg, #f39c12, #e67e22);
+        }
+        .call-buttons #holdBtn {
+            background: linear-gradient(90deg, #1abc9c, #16a085);
+        }
+        .call-buttons #transferBtn {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+        }
+        .call-buttons #mergeBtn {
+            background: linear-gradient(90deg, #95a5a6, #7f8c8d);
+        }
+        .register-buttons button:hover, .call-buttons button:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        .register-buttons button:disabled, .call-buttons button:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+        }
+        #targetUri {
+            width: calc(100% - 20px);
+            border-radius: 10px;
+            background: #34495e;
+        }
+        .container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom-left-radius: 50%;
+            z-index: -1;
+        }
+        #callDuration {
+           font-size: 16px;
+           color: #2ecc71;
+           margin-top: 10px;
+        }
+        textarea {
+           width: calc(100% - 20px);
+           padding: 12px;
+           margin-bottom: 15px;
+           border-radius: 10px;
+           border: 1px solid #34495e;
+           font-size: 16px;
+           background: #34495e;
+           color: #ecf0f1;
+           box-sizing: border-box;
+        }
+        .message-buttons {
+           text-align: center;
+           margin-top: 20px;
+        }
+
+        .message-buttons button {
+           width: calc(50% - 10px);
+           padding: 12px;
+           margin: 5px;
+           border-radius: 30px;
+           border: none;
+           color: #fff;
+           font-size: 16px;
+           cursor: pointer;
+           transition: all 0.3s ease-in-out;
+           background: linear-gradient(90deg, #00c6ff, #0072ff);
+        }
+        .message-buttons button:hover {
+           opacity: 0.9;
+           transform: scale(1.05);
+           box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #incomingMessages {
+           margin-top: 20px;
+           padding: 15px;
+           border-radius: 10px;
+           background: #34495e;
+           border: 1px solid #34495e;
+        }
+
+        #messageList {
+           max-height: 150px;
+           overflow-y: auto;
+        }
+        .message-item {
+           background: #1e272e;
+           padding: 10px;
+           border-radius: 5px;
+           margin-bottom: 10px;
+           border: 1px solid #34495e;
+        }
+        .message-item span {
+           display: block;
+           color: #ecf0f1;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Web SIP Client</h2>
+        
+        <label for="wsServer">WebSocket Server:</label>
+        <input type="text" id="wsServer" value="wss://192.168.174.130:4443/wss" disabled>
+
+        <label for="sipUri">SIP URI:</label>
+        <input type="text" id="sipUri" placeholder="sip:username@domain">
+
+        <label for="sipPassword">SIP Password:</label>
+        <input type="password" id="sipPassword" placeholder="Password">
+
+        <div class="info">
+            <input type="checkbox" id="saveCredentials">
+            <label for="saveCredentials">Save login credentials</label>
+        </div>
+       <div id="status" class="status-box">
+            <span>Status:</span> Disconnected
+       </div>
+        <div class="register-buttons">
+            <button id="registerBtn">Register</button>
+        </div>
+
+        <label for="targetUri">Target URI (username only):</label>
+        <input type="text" id="targetUri" placeholder="username">
+
+        <div class="call-buttons" id="callButtons">
+        <div id="callDuration">Call Duration: <span id="duration">00:00</span></div>
+            <button id="callBtn">Call</button>
+            <button id="endCallBtn">End Call</button>
+            <button id="muteBtn">Mute/Unmute</button>
+            <button id="holdBtn">Hold/Resume</button>
+            <button id="transferBtn">Transfer</button>
+            <button id="mergeBtn">Merge</button>
+            
+       <label for="messageRecipient">Message Recipient (SIP URI):</label>
+       <input type="text" id="messageRecipient" placeholder="sip:username@domain">
+       <label for="messageText">Message:</label>
+       <textarea id="messageText" rows="4" placeholder="Type your message here"></textarea>
+       <div class="message-buttons">
+       <button id="sendMessageBtn">Send Message</button>
+       </div><div id="messageStatus" class="status-box"><span>Message Status:</span> Ready to send</div>
+       <div id="incomingMessageField" class="status-box"><span>Incoming Messages:</span><div id="messageList" style="max-height: 200px; overflow-y: auto;"></div></div>
+       </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jssip/dist/jssip.min.js"></script>
+    <script>
+let userAgent;
+let activeSession = null;
+let targetSession = null; // Store the target call session
+let callStartTime = null;
+let callDurationInterval = null;
+
+window.onload = function() {
+    const savedUri = localStorage.getItem('sipUri');
+    const savedPassword = localStorage.getItem('sipPassword');
+    if (savedUri && savedPassword) {
+        document.getElementById('sipUri').value = savedUri;
+        document.getElementById('sipPassword').value = savedPassword;
+        document.getElementById('saveCredentials').checked = true;
+    }
+    document.getElementById('targetUri').disabled = true;
+    document.getElementById('callButtons').style.display = 'none'; // Hide call buttons initially
+};
+
+
+// Function to show incoming call prompt
+function showIncomingCallPrompt(session) {
+    const incomingCallDiv = document.createElement('div');
+    incomingCallDiv.id = 'incomingCallPrompt';
+    incomingCallDiv.style.position = 'fixed';
+    incomingCallDiv.style.top = '50%';
+    incomingCallDiv.style.left = '50%';
+    incomingCallDiv.style.transform = 'translate(-50%, -50%)';
+    incomingCallDiv.style.background = '#34495e';
+    incomingCallDiv.style.padding = '20px';
+    incomingCallDiv.style.borderRadius = '10px';
+    incomingCallDiv.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.2)';
+    incomingCallDiv.style.zIndex = '1000';
+    incomingCallDiv.innerHTML = `
+        <h3 style="color: #ecf0f1;">Incoming Call from ${session.remote_identity.uri.toString()}</h3>
+        <button id="acceptCallBtn" style="padding: 10px 20px; margin: 5px; border-radius: 5px; border: none; background: #2ecc71; color: #fff; cursor: pointer;">Accept</button>
+        <button id="rejectCallBtn" style="padding: 10px 20px; margin: 5px; border-radius: 5px; border: none; background: #e74c3c; color: #fff; cursor: pointer;">Reject</button>
+    `;
+    document.body.appendChild(incomingCallDiv);
+
+    document.getElementById('acceptCallBtn').addEventListener('click', () => {
+        console.log('Call accepted');
+        incomingSession = session;
+        incomingSession.answer();
+        document.getElementById('incomingCallPrompt').remove();
+    });
+
+    document.getElementById('rejectCallBtn').addEventListener('click', () => {
+        console.log('Call rejected');
+        session.terminate();
+        document.getElementById('incomingCallPrompt').remove();
+    });
+}
+
+function updateStatus(message) {
+    document.getElementById('status').innerHTML = `<span>Status:</span> ${message}`;
+}
+
+function startCallDurationTimer() {
+    callStartTime = new Date();
+    callDurationInterval = setInterval(updateCallDuration, 1000);
+}
+
+function stopCallDurationTimer() {
+    if (callDurationInterval) {
+        clearInterval(callDurationInterval);
+        callDurationInterval = null;
+    }
+}
+
+function updateCallDuration() {
+    if (!callStartTime) return;
+
+    const now = new Date();
+    const duration = new Date(now - callStartTime);
+
+    const minutes = String(duration.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(duration.getUTCSeconds()).padStart(2, '0');
+
+    document.getElementById('duration').textContent = `${minutes}:${seconds}`;
+}
+
+document.getElementById('registerBtn').addEventListener('click', () => {
+    const sipUri = document.getElementById('sipUri').value;
+    const sipPassword = document.getElementById('sipPassword').value;
+
+    if (!sipUri || !sipPassword) {
+        updateStatus('Please enter SIP URI and Password');
+        return;
+    }
+
+    if (userAgent && userAgent.isRegistered()) {
+        // If already registered, unregister
+        userAgent.unregister();
+        document.getElementById('registerBtn').classList.add('unregistered');
+        document.getElementById('registerBtn').classList.remove('registered');
+        document.getElementById('registerBtn').textContent = 'Register';
+        document.getElementById('callButtons').style.display = 'none'; // Hide call buttons
+        updateStatus('Disconnected');
+        return;
+    }
+
+    console.log('Attempting to connect to WebSocket...');
+
+    const socket = new JsSIP.WebSocketInterface(document.getElementById('wsServer').value);
+
+    socket.onopen = () => console.log('WebSocket connected');
+    socket.onclose = () => console.log('WebSocket disconnected');
+    socket.onmessage = (event) => console.log('WebSocket message received:', event.data);
+    socket.onerror = (error) => console.error('WebSocket error:', error);
+
+    const configuration = {
+        sockets: [socket],
+        uri: sipUri,
+        password: sipPassword,
+        session_timers: false,
+        register: true
+    };
+
+    userAgent = new JsSIP.UA(configuration);
+    userAgent.start();
+
+    userAgent.on('registered', () => {
+        console.log('Registration successful and ready for calls');
+        document.getElementById('registerBtn').classList.add('registered');
+        document.getElementById('registerBtn').classList.remove('unregistered');
+        document.getElementById('registerBtn').textContent = 'Unregister';
+        document.getElementById('callButtons').style.display = 'block'; // Show call buttons
+        document.getElementById('targetUri').disabled = false; // Enable target URI field
+        updateStatus('Registration successful and ready for calls');
+    });
+
+    userAgent.on('registrationFailed', (e) => {
+        console.error('Registration failed:', e.cause);
+        document.getElementById('registerBtn').classList.add('unregistered');
+        document.getElementById('registerBtn').classList.remove('registered');
+        document.getElementById('registerBtn').textContent = 'Register';
+        document.getElementById('callButtons').style.display = 'none'; // Hide call buttons
+        document.getElementById('targetUri').disabled = true; // Disable target URI field
+        updateStatus(`Registration failed: ${e.cause}`);
+    });
+
+    userAgent.on('unregistered', () => {
+        console.log('Unregistered successfully');
+        document.getElementById('registerBtn').classList.add('unregistered');
+        document.getElementById('registerBtn').classList.remove('registered');
+        document.getElementById('registerBtn').textContent = 'Register';
+        document.getElementById('callButtons').style.display = 'none'; // Hide call buttons
+        document.getElementById('targetUri').disabled = true; // Disable target URI field
+        updateStatus('Unregistered');
+    });
+
+    userAgent.on('newRTCSession', (data) => {
+        const session = data.session;
+        console.log('New RTC session:', session);
+
+        if (session.direction === 'incoming') {
+            console.log('Incoming call from:', session.remote_identity.uri.toString());
+            showIncomingCallPrompt(session); // Show prompt for incoming call
+        }
+
+        session.on('accepted', () => {
+            console.log('Call accepted');
+            activeSession = session;
+            updateStatus('Call connected');
+            startCallDurationTimer(); // Start the timer when call is accepted
+        });
+
+        session.on('ended', () => {
+            console.log('Call ended');
+            resetButtons();
+            updateStatus('Call ended');
+            stopCallDurationTimer(); // Ensure timer is stopped when the call ends
+        });
+
+        session.on('failed', (e) => {
+            console.error('Call failed:', e.cause);
+            resetButtons();
+            updateStatus(`Call failed: ${e.cause} (Code: ${e.cause.code})`);
+        });
+
+        session.on('progress', () => {
+            console.log('Call in progress...');
+            updateStatus('Call in progress...');
+        });
+
+        session.on('hold', () => {
+            console.log('Call put on hold');
+            updateStatus('Call on hold');
+        });
+
+        session.on('unhold', () => {
+            console.log('Call resumed from hold');
+            updateStatus('Call resumed from hold');
+        });
+
+        session.on('muted', () => {
+            console.log('Call audio muted');
+            updateStatus('Call audio muted');
+        });
+
+        session.on('unmuted', () => {
+            console.log('Call audio unmuted');
+            updateStatus('Call audio unmuted');
+        });
+    });
+
+   userAgent.on('newMessage', (e) => {
+        const incomingMessage = e.message;
+        // Check if the message request is available
+        const request = incomingMessage._request;
+        if (!request || !request.data) {
+            console.error('Received message with missing request data:', incomingMessage);
+            return;
+        }
+        // Extract message details
+        const from = incomingMessage.remote_identity ? incomingMessage.remote_identity._uri : 'Unknown';
+        const requestData = request.data;
+        // Safely extract body from requestData
+        let body = '';
+        const bodySeparator = '\r\n\r\n'; // SIP body separator
+        const bodyIndex = requestData.indexOf(bodySeparator);
+        if (bodyIndex !== -1) {
+            body = requestData.substring(bodyIndex + bodySeparator.length);
+        } else {
+            console.warn('Message body not found in request data:', requestData);
+        }
+        console.log('Incoming MESSAGE:', {
+            from: from,
+            body: body
+        });
+
+        displayIncomingMessage(from, body);
+    });
+    
+    userAgent.on('sipEvent', (data) => {
+        console.log('SIP Event:', data);
+    });
+
+    // Handle save credentials
+    if (document.getElementById('saveCredentials').checked) {
+        localStorage.setItem('sipUri', sipUri);
+        localStorage.setItem('sipPassword', sipPassword);
+    } else {
+        localStorage.removeItem('sipUri');
+        localStorage.removeItem('sipPassword');
+    }
+});
+
+    function displayIncomingMessage(from, body) {
+    const incomingMessageField = document.getElementById('incomingMessageField');
+
+    // Check if the element exists
+    if (incomingMessageField) {
+        const messageContent = `From: ${from}<br>Message: ${body}`;
+        
+        // Append the message as HTML content
+        incomingMessageField.innerHTML += `<p>${messageContent}</p>`;
+    } else {
+        console.warn('Incoming message field not found!');
+    }
+}
+
+
+document.getElementById('callBtn').addEventListener('click', () => {
+    const username = document.getElementById('targetUri').value;
+    if (!username) {
+        updateStatus('Please enter a target username.');
+        return;
+    }
+    const targetUri = `sip:${username}@172.22.0.140`;
+    console.log('Initiating call to:', targetUri);
+    const options = {
+        mediaConstraints: { audio: true, video: false }
+    };
+    targetSession = userAgent.call(targetUri, options); // Store the target session
+});
+
+document.getElementById('muteBtn').addEventListener('click', () => {
+    if (activeSession) {
+        if (activeSession.isMuted().audio) {
+            console.log('Unmuting audio');
+            activeSession.unmute({ audio: true });
+        } else {
+            console.log('Muting audio');
+            activeSession.mute({ audio: true });
+        }
+    } else {
+        updateStatus('No active call to mute/unmute.');
+    }
+});
+
+document.getElementById('holdBtn').addEventListener('click', () => {
+    if (activeSession) {
+        if (activeSession.isOnHold().local) {
+            console.log('Resuming call');
+            activeSession.unhold();
+        } else {
+            console.log('Putting call on hold');
+            activeSession.hold();
+        }
+    } else {
+        updateStatus('No active call to hold/unhold.');
+    }
+});
+
+document.getElementById('transferBtn').addEventListener('click', () => {
+    const username = document.getElementById('targetUri').value;
+    if (username && activeSession) {
+        const targetUri = `sip:${username}@mypbx.localserver.local`;
+        console.log('Transferring call to:', targetUri);
+        activeSession.refer(targetUri);
+    } else {
+        updateStatus('Please enter a valid target username and ensure a call is active.');
+    }
+});
+
+document.getElementById('mergeBtn').addEventListener('click', () => {
+    if (activeSession && targetSession) {
+        console.log('Merging call with:', targetSession.remote_identity.uri.toString());
+        activeSession.refer(targetSession.remote_identity.uri.toString());
+    } else {
+        updateStatus('Please make sure both calls are active before merging.');
+    }
+});
+
+document.getElementById('endCallBtn').addEventListener('click', () => {
+    if (activeSession) {
+        console.log('Ending call');
+        activeSession.terminate();
+        resetButtons();
+        updateStatus('Call ended');
+        stopCallDurationTimer(); // Ensure timer is stopped when the call ends
+    } else {
+        updateStatus('No active call to end.');
+    }
+});
+
+function resetButtons() {
+    activeSession = null;
+    targetSession = null;
+    document.querySelectorAll('.call-buttons button').forEach(btn => btn.classList.remove('active'));
+}
+
+document.getElementById('sendMessageBtn').addEventListener('click', () => {
+    const recipient = document.getElementById('messageRecipient').value;
+    const text = document.getElementById('messageText').value;
+
+    if (!recipient || !text) {
+        updateMessageStatus('Please enter a recipient and message.');
+        return;
+    }
+
+    const eventHandlers = {
+        'succeeded': function(e) {
+            console.log('Message sent successfully:', e);
+            updateMessageStatus('Message sent successfully!');
+        },
+        'failed': function(e) {
+            console.error('Failed to send message:', e.cause);
+            updateMessageStatus(`Failed to send message: ${e.cause}`);
+        }
+    };
+
+    const options = {
+        'eventHandlers': eventHandlers
+    };
+
+    // Make sure 'coolPhone' is your instance of the SIP client
+    userAgent.sendMessage(recipient, text, options);
+});
+
+function updateMessageStatus(message) {
+    document.getElementById('messageStatus').innerHTML = `<span>Status:</span> ${message}`;
+}
+    </script>
+</body>
+</html>
+

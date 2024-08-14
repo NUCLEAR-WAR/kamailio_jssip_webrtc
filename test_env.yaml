@@ -1,0 +1,95 @@
+services:
+  mysql:
+    build: ./mysql
+    image: mysql_db
+    container_name: mysql
+    env_file:
+      - .env
+    volumes:
+      - dbdata:/var/lib/mysql
+    expose:
+      - "3306/tcp"
+    networks:
+      default:
+        ipv4_address: ${MYSQL_IP}  
+  rtpengine:
+    build: ./rtpengine
+    image: docker_rtpengine
+    container_name: rtpengine
+    privileged: true
+    env_file:
+      - .env
+    volumes:
+      - ./rtpengine:/mnt/rtpengine
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - TABLE=0
+      - INTERFACE=${RTPENGINE_IP}
+      - LISTEN_NG=${RTPENGINE_IP}:2223
+      - PIDFILE=/run/ngcp-rtpengine-daemon.pid
+      - PORT_MAX=50000
+      - PORT_MIN=49000
+      - NO_FALLBACK=no
+      - TOS=184
+    expose:
+      - "2223/udp"
+      - "49000-50000/udp"
+    ports:
+      - "49000-50000:49000-50000/udp"
+    networks:
+      default:
+        ipv4_address: ${RTPENGINE_IP}
+  haproxy:
+    build: ./haproxy
+    image: loadbalancer
+    container_name: loadbalancer
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+    env_file:
+      - .env
+    volumes:
+      - ./haproxy:/mnt/haproxy
+    expose:
+      - "5060/tcp"
+    ports:
+      - "5060/tcp"
+    networks:
+      default:
+        ipv4_address: ${LOADBALANCER_IP}
+  sip_server:
+    build: ./wss_server
+    image: sip_server
+    container_name: sip_server
+    depends_on:
+      - rtpengine
+      - mysql      
+    privileged: true
+    env_file:
+      - .env
+    volumes:
+      - ./wss_server:/mnt/wss_server
+    expose:
+      - "5060/tcp"
+      - "5060/udp"
+      - "80/tcp"
+      - "443/tcp"
+      - "8080/tcp"
+      - "4443/tcp"
+    ports:
+      - "5060:5060/tcp"
+      - "80:80/tcp"
+      - "443:443/tcp"
+      - "8080:8080/tcp"
+      - "4443:4443/tcp"
+    networks:
+      default:
+        ipv4_address: ${WSS_SERVER_IP}            
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: ${TEST_NETWORK}
+volumes:
+  dbdata: {}          
