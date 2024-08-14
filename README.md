@@ -2,8 +2,16 @@
 
 Here is a docker container runs Kamailio as WebSocket/SIP Server and NGINX with simple JsSIP based WebSIP Client for Calls and messaging.
 
-Useage :
-after Deploy run :
+Usage :
+Before depoly set the Host IP of the machine running docker to the correct one in the .env file
+
+DOCKER_HOST_IP=192.168.174.130
+
+Then deploy with this command :
+
+docker compose -f test_env.yaml up
+
+After Deploy run :
 
 docker container exec -it sip_server /bin/bash
 
