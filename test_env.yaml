@@ -28,8 +28,8 @@ services:
       - INTERFACE=${RTPENGINE_IP}
       - LISTEN_NG=${RTPENGINE_IP}:2223
       - PIDFILE=/run/ngcp-rtpengine-daemon.pid
-      - PORT_MAX=50000
-      - PORT_MIN=49000
+      - PORT_MAX=30000
+      - PORT_MIN=31000
       - NO_FALLBACK=no
       - TOS=184
     expose:
