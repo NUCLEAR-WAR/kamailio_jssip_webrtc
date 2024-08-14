@@ -42,7 +42,7 @@ COPY start-main.sh /usr/bin/start-main.sh
 RUN chmod +x /usr/bin/start-heartbeat.sh
 RUN chmod +x /usr/bin/start-nginx.sh
 RUN chmod +x /usr/bin/start-wssserver.sh
-RUN chmod +x /usr/bin/start-start-main.sh
+RUN chmod +x /usr/bin/start-main.sh
 
 CMD /usr/bin/start-main.sh
 
