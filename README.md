@@ -19,3 +19,5 @@ https://<DOCKER_HOST_IP>/
 use the credittials and log in.
 
 feel free to test it and write me back!
+
+Note : deply and stop take time because of RTPEngine and the opened port, the issue is mainlly due to docker slow handling opening port ranges spceially if they are long
