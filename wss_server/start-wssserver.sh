@@ -17,6 +17,8 @@ then
 fi
 sleep 5;
 
+sed -i 's|DOCKER_HOST_IP|'$DOCKER_HOST_IP'|g' /var/www/html/websip.htm
+
 # Start server.
 
 
