@@ -201,7 +201,7 @@
         <h2>Web SIP Client</h2>
         
         <label for="wsServer">WebSocket Server:</label>
-        <input type="text" id="wsServer" value="wss://DOCKER_HOST_IP:4443/wss" disabled>
+        <input type="text" id="wsServer" value="wss://192.168.199.168:4443/wss" disabled>
 
         <label for="sipUri">SIP URI:</label>
         <input type="text" id="sipUri" placeholder="sip:username@domain">
@@ -410,6 +410,16 @@ document.getElementById('registerBtn').addEventListener('click', () => {
             activeSession = session;
             updateStatus('Call connected');
             startCallDurationTimer(); // Start the timer when call is accepted
+			 // Ensure the audio is being played
+            const remoteStream = new MediaStream(); // Create a MediaStream
+            session.connection.getReceivers().forEach(receiver => {
+            if (receiver.track.kind === 'audio') {
+            remoteStream.addTrack(receiver.track); // Attach the remote audio track
+        }
+    });
+    const audioElement = new Audio(); // Create an Audio element
+    audioElement.srcObject = remoteStream; // Set the MediaStream as the source
+    audioElement.play(); // Play the audio
         });
 
         session.on('ended', () => {
@@ -517,8 +527,16 @@ document.getElementById('callBtn').addEventListener('click', () => {
     const targetUri = `sip:${username}@172.22.0.140`;
     console.log('Initiating call to:', targetUri);
     const options = {
-        mediaConstraints: { audio: true, video: false }
+        mediaConstraints: { audio: true, video: false },
+        pcConfig: {
+            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] // Example STUN server
+        },
+        rtcOfferConstraints: {
+            offerToReceiveAudio: 1,
+            offerToReceiveVideo: 0
+        }
     };
+    
     targetSession = userAgent.call(targetUri, options); // Store the target session
 });
 
@@ -622,4 +640,3 @@ function updateMessageStatus(message) {
     </script>
 </body>
 </html>
-
