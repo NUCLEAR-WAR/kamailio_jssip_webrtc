@@ -19,7 +19,7 @@ on command line run the following to create usres:
 
 kamctl add user1 pass1
 
-kamctl add user1 pass1
+kamctl add user2 pass2
 
 Now go to this webpage :
 https://<DOCKER_HOST_IP>/
